@@ -11,8 +11,8 @@ class Pair:
         self.first = first
         self.second = second
 
-    def read(self, prompt=None):
-        line = input() if prompt is None else input(prompt)
+    def read(self):
+        line = input()
         parts = list(map(int, line.split()))
         if len(parts) != 2:
             raise ValueError("Необходимо ввести два числа через пробел.")
@@ -35,7 +35,7 @@ def make_time(first, second):
     try:
         return Pair(first, second)
     except (ValueError, TypeError) as e:
-        print(f"Ошибка при создании объекта: {e}")
+        print(e)
         exit(1)
 
 
@@ -53,5 +53,6 @@ if __name__ == '__main__':
 
     print("\nввод данных с клавиатуры:")
     time3 = Pair()
+    time3.read()
     time3.display()
     print(f"Время в минутах: {time3.minutes()}")

@@ -2,17 +2,7 @@
 # -*- coding: utf-8 -*-
 
 class Account:
-    """
-    Класс, представляющий банковский счет.
-    """
     def __init__(self, surname="", account_number="", interest_rate=0.0, balance=0.0):
-        """
-        Инициализация банковского счета.
-        :param surname: Фамилия владельца.
-        :param account_number: Номер счета.
-        :param interest_rate: Процент начисления (например, 5.5).
-        :param balance: Сумма в рублях.
-        """
         if not isinstance(balance, (int, float)) or balance < 0:
             raise ValueError("Сумма на счете не может быть отрицательной.")
         if not isinstance(interest_rate, (int, float)) or interest_rate < 0:
@@ -23,11 +13,8 @@ class Account:
         self.interest_rate = interest_rate
         self.balance = float(balance)
 
-    def read(self, prompt=None):
-        """
-        Ввод данных с клавиатуры.
-        """
-        print(prompt if prompt else "Введите данные счета:")
+    def read(self):
+        print( "Введите данные счета:")
         self.surname = input("Фамилия владельца: ")
         self.account_number = input("Номер счета: ")
         try:
@@ -40,23 +27,18 @@ class Account:
             exit(1)
 
     def display(self):
-        """
-        Вывод данных на экран.
-        """
         print(f"Владелец: {self.surname}")
         print(f"Номер счета: {self.account_number}")
         print(f"Процент начисления: {self.interest_rate}%")
         print(f"Баланс: {self.balance:.2f} руб.")
 
     def change_owner(self, new_surname):
-
         if not new_surname:
             raise ValueError("Фамилия не может быть пустой.")
         self.surname = new_surname
         print(f"Владелец счета изменен на: {self.surname}")
 
     def withdraw(self, amount):
-
         if amount <= 0:
             raise ValueError("Сумма снятия должна быть положительной.")
         if amount > self.balance:
@@ -67,24 +49,20 @@ class Account:
         return True
 
     def deposit(self, amount):
-
         if amount <= 0:
             raise ValueError("Сумма пополнения должна быть положительной.")
         self.balance += amount
         print(f"Внесено {amount:.2f} руб. Новый баланс: {self.balance:.2f} руб.")
 
     def accrue_interest(self):
-
         interest = self.balance * (self.interest_rate / 100)
         self.balance += interest
         print(f"Начислено процентов: {interest:.2f} руб. Новый баланс: {self.balance:.2f} руб.")
 
     def to_dollars(self, rate=90.0):
-
         return self.balance / rate
 
     def to_euros(self, rate=100.0):
-
         return self.balance / rate
 
     def amount_in_words(self):
@@ -96,30 +74,68 @@ class Account:
         hundreds = ["", "сто", "двести", "триста", "четыреста",
                     "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот"]
 
-        rubles = int(self.balance)
-        kopecks = int(round((self.balance - rubles) * 100))
+        def three_digits_to_words(num):
+            if num == 0:
+                return ""
+            result = []
+            if num >= 100:
+                result.append(hundreds[num // 100])
+                num %= 100
+            if 10 <= num < 20:
+                result.append(teens[num - 10])
+            else:
+                if num >= 20:
+                    result.append(tens[num // 10])
+                    num %= 10
+                if num > 0:
+                    result.append(units[num])
+            return " ".join(result)
 
         def num_to_words(n):
             if n == 0:
                 return "ноль"
+
             result = []
-            if n >= 100:
-                result.append(hundreds[n // 100])
-                n %= 100
-            if 10 <= n < 20:
-                result.append(teens[n - 10])
-            else:
-                if n >= 20:
-                    result.append(tens[n // 10])
-                    n %= 10
-                if n > 0:
-                    result.append(units[n])
+            if n >= 1000000:
+                millions = n // 1000000
+                n %= 1000000
+                m_text = three_digits_to_words(millions)
+                if 11 <= millions % 100 <= 19:
+                    m_end = "миллионов"
+                elif millions % 10 == 1:
+                    m_end = "миллион"
+                elif 2 <= millions % 10 <= 4:
+                    m_end = "миллиона"
+                else:
+                    m_end = "миллионов"
+                result.append(f"{m_text} {m_end}")
+
+            if n >= 1000:
+                thousands = n // 1000
+                n %= 1000
+                th_text = three_digits_to_words(thousands)
+                th_text = th_text.replace("один", "одна").replace("два", "две")
+                if 11 <= thousands % 100 <= 19:
+                    th_end = "тысяч"
+                elif thousands % 10 == 1:
+                    th_end = "тысяча"
+                elif 2 <= thousands % 10 <= 4:
+                    th_end = "тысячи"
+                else:
+                    th_end = "тысяч"
+                result.append(f"{th_text} {th_end}")
+
+            if n > 0:
+                result.append(three_digits_to_words(n))
+
             return " ".join(result)
+
+        rubles = int(self.balance)
+        kopecks = int(round((self.balance - rubles) * 100))
 
         rub_text = num_to_words(rubles)
         kop_text = num_to_words(kopecks)
 
-        # Склонение рублей
         if 11 <= rubles % 100 <= 19:
             rub_end = "рублей"
         elif rubles % 10 == 1:
@@ -129,7 +145,6 @@ class Account:
         else:
             rub_end = "рублей"
 
-        # Склонение копеек
         if 11 <= kopecks % 100 <= 19:
             kop_end = "копеек"
         elif kopecks % 10 == 1:
@@ -139,7 +154,7 @@ class Account:
         else:
             kop_end = "копеек"
 
-        return f"{rub_text} {rub_end} {kop_text:02d} {kop_end}"
+        return f"{rub_text} {rub_end} {kop_text} {kop_end}"
 
 
 if __name__ == '__main__':
@@ -157,7 +172,6 @@ if __name__ == '__main__':
     acc.deposit(5000)
     acc.display()
 
-    # 4. Снятие средств
     print("\n4. Снятие средств:")
     acc.withdraw(2000)
     acc.display()
