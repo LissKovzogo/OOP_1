@@ -159,34 +159,34 @@ class Account:
 
 if __name__ == '__main__':
 
-    print("\n1. Создание счета:")
+    # Создание счета
     acc = Account("Иванов И.И.", "40817810099910004312", 5.0, 15000.50)
     acc.display()
 
-    print("\n2. Смена владельца:")
+    #Смена владельца
     acc.change_owner("Петров П.П.")
     acc.display()
 
-    print("\n3. Пополнение счета:")
+    #Пополнение счета
     acc.deposit(5000)
     acc.display()
 
-    print("\n4. Снятие средств:")
+    #Снятие средств
     acc.withdraw(2000)
     acc.display()
 
-    print("\n5. Начисление процентов:")
+    #Начисление процентов
     acc.accrue_interest()
     acc.display()
 
-    print("\n6. Перевод в валюту:")
+    #Перевод в валюту
     print(f"Сумма в долларах: {acc.to_dollars():.2f} USD")
     print(f"Сумма в евро: {acc.to_euros():.2f} EUR")
 
-    print("\n7. Сумма прописью:")
+    #Сумма прописью
     print(acc.amount_in_words())
 
-    print("\n8. Ввод нового счета с клавиатуры:")
+    #Ввод нового счета с клавиатуры
     new_acc = Account()
     new_acc.read()
     new_acc.display()
